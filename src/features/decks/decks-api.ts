@@ -13,7 +13,10 @@ export const decksAPI = {
   },
   addDeck(name:string) {
     return instance.post<Deck>('decks', {name})
-  }
+  },
+  deleteDeck(id:string){
+    return instance.delete(`decks/${id}`)
+  },
 }
 
 export type Author = {

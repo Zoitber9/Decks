@@ -1,20 +1,23 @@
 import s from './DeckItem.module.css'
 import { Deck } from '../../decks-api.ts'
+import { useAppDispatch } from './../../../../app/store.ts'
+import { deleteDeckTC } from '../../decks-thunks.ts'
 
 type DeckProps = {
   deck: Deck
 }
 
-const TEST_ACC_NAME = 'test acc'
+// const TEST_ACC_NAME = 'test acc'
 
 export const DeckItem = ({ deck }: DeckProps) => {
-  const isTestingDeck = deck.author.name === TEST_ACC_NAME
+  // const isTestingDeck = deck.author.name === TEST_ACC_NAME
+  const dispatch = useAppDispatch()
 
   return (
     <li className={s.item}>
       <h3 className={s.title}>
         {deck.name}
-        {isTestingDeck && '✨'}
+        {'✨'}
       </h3>
       <p className={s.characteristic}>
         <b>Author:</b> {deck.author.name}
@@ -26,10 +29,13 @@ export const DeckItem = ({ deck }: DeckProps) => {
         <b>Updated:</b> {new Date(deck.updated).toLocaleString('ru-Ru')}
       </p>
 
-      {isTestingDeck && (
+      {(
         <div className={s.buttonBox}>
           <button>update</button>
-          <button>delete</button>
+          <button onClick={() => {
+            dispatch(deleteDeckTC(deck.id))
+          }}>delete
+          </button>
         </div>
       )}
     </li>

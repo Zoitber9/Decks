@@ -1,5 +1,5 @@
 import { decksAPI } from '../decks/decks-api.ts'
-import { setDecksAC } from './decks-reducer.ts'
+import { deleteDeckAC, setDecksAC } from './decks-reducer.ts'
 import { Dispatch } from 'redux'
 import { AppDispatch } from './../../app/store.ts'
 
@@ -24,4 +24,15 @@ export const addDeckTC = (name: string) => (dispatch: AppDispatch) => {
   return decksAPI.addDeck(name).then(() => {
     dispatch(fetchDecksTC())
   })
+}
+
+export const deleteDeckTC = (id: string) => async (dispatch: Dispatch) => {
+  try {
+    await decksAPI.deleteDeck(id)
+    dispatch(deleteDeckAC(id))
+  } catch (e) {
+    console.log('ERROR', e)
+  }
+
+
 }
