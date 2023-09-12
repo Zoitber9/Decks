@@ -11,6 +11,9 @@ export const decksAPI = {
   fetchDecks() {
     return instance.get<RootObject>('decks')
   },
+  addDeck(name:string) {
+    return instance.post<Deck>('decks', {name})
+  }
 }
 
 export type Author = {
@@ -44,4 +47,5 @@ export type RootObject = {
   pagination: Pagination;
   maxCardsCount: number;
 }
+
 
