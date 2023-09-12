@@ -31,7 +31,7 @@ export const deleteDeckTC = (id: string) => async (dispatch: Dispatch) => {
     await decksAPI.deleteDeck(id)
     dispatch(deleteDeckAC(id))
   } catch (e) {
-    console.log('ERROR', e)
+    console.log((e as any).message)
   }
 
 
