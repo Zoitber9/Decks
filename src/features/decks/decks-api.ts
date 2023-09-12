@@ -14,9 +14,17 @@ export const decksAPI = {
   addDeck(name:string) {
     return instance.post<Deck>('decks', {name})
   },
-  deleteDeck(id:string){
-    return instance.delete(`decks/${id}`)
+  deleteDeck(id: string) {
+    return instance.delete<Deck>(`decks/${id}`)
   },
+  updateDeck({ id, name }: UpdateDeckParams) {
+    return instance.patch<Deck>(`decks/${id}`, { name })
+  },
+}
+
+export type UpdateDeckParams = {
+  id: string
+  name: string
 }
 
 export type Author = {

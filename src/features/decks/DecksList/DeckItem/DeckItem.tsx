@@ -1,17 +1,25 @@
 import s from './DeckItem.module.css'
 import { Deck } from '../../decks-api.ts'
 import { useAppDispatch } from './../../../../app/store.ts'
-import { deleteDeckTC } from '../../decks-thunks.ts'
+import { deleteDeckTC, updateDeckTC } from '../../decks-thunks.ts'
 
 type DeckProps = {
   deck: Deck
 }
 
-// const TEST_ACC_NAME = 'test acc'
+// const TEST_ACC_NAME = 'as'
 
 export const DeckItem = ({ deck }: DeckProps) => {
   // const isTestingDeck = deck.author.name === TEST_ACC_NAME
   const dispatch = useAppDispatch()
+
+  const handleDeleteButtonClick = () => {
+    dispatch(deleteDeckTC(deck.id))
+  }
+
+  const handleEditButtonClick = () => {
+    dispatch(updateDeckTC({ id: deck.id, name: `${deck.name} updated` }))
+  }
 
   return (
     <li className={s.item}>
@@ -31,13 +39,11 @@ export const DeckItem = ({ deck }: DeckProps) => {
 
       {(
         <div className={s.buttonBox}>
-          <button>update</button>
-          <button onClick={() => {
-            dispatch(deleteDeckTC(deck.id))
-          }}>delete
-          </button>
+          <button onClick={handleEditButtonClick}>update</button>
+          <button onClick={handleDeleteButtonClick}>delete</button>
         </div>
       )}
     </li>
   )
 }
+
