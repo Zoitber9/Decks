@@ -2,30 +2,37 @@ import s from './DeckItem.module.css'
 import { Deck } from '../../decks-api.ts'
 import { useAppDispatch } from './../../../../app/store.ts'
 import { deleteDeckTC, updateDeckTC } from '../../decks-thunks.ts'
+import { useState } from 'react'
 
 type DeckProps = {
   deck: Deck
 }
-
-// const TEST_ACC_NAME = 'as'
+const TEST_ACC_NAME = '12345'
 
 export const DeckItem = ({ deck }: DeckProps) => {
-  // const isTestingDeck = deck.author.name === TEST_ACC_NAME
+  const isTestingDeck = deck.author.name === TEST_ACC_NAME
   const dispatch = useAppDispatch()
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleDeleteButtonClick = () => {
-    dispatch(deleteDeckTC(deck.id))
+    setIsLoading(true)
+    dispatch(deleteDeckTC(deck.id)).finally(() => {
+      setIsLoading(false)
+    })
   }
 
   const handleEditButtonClick = () => {
-    dispatch(updateDeckTC({ id: deck.id, name: `${deck.name} updated` }))
+    setIsLoading(true)
+    dispatch(updateDeckTC({ id: deck.id, name: `${deck.name} updated` })).finally(() => {
+      setIsLoading(false)
+    })
   }
 
   return (
     <li className={s.item}>
       <h3 className={s.title}>
         {deck.name}
-        {'✨'}
+        {isTestingDeck && '✨'}
       </h3>
       <p className={s.characteristic}>
         <b>Author:</b> {deck.author.name}
@@ -37,13 +44,16 @@ export const DeckItem = ({ deck }: DeckProps) => {
         <b>Updated:</b> {new Date(deck.updated).toLocaleString('ru-Ru')}
       </p>
 
-      {(
+      {isTestingDeck && (
         <div className={s.buttonBox}>
-          <button onClick={handleEditButtonClick}>update</button>
-          <button onClick={handleDeleteButtonClick}>delete</button>
+          <button onClick={handleEditButtonClick} disabled={isLoading}>
+            update
+          </button>
+          <button onClick={handleDeleteButtonClick} disabled={isLoading}>
+            delete
+          </button>
         </div>
       )}
     </li>
   )
 }
-

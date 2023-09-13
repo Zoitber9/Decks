@@ -1,42 +1,41 @@
-import { UpdateDeckParams, decksAPI } from '../decks/decks-api.ts'
-import { deleteDeckAC, setDecksAC, updateDeckAC } from './decks-reducer.ts'
 import { Dispatch } from 'redux'
-import { AppDispatch } from './../../app/store.ts'
+import { decksAPI, UpdateDeckParams } from './decks-api.ts'
+import { addDeckAC, deleteDeckAC, setDecksAC, updateDeckAC } from './decks-reducer.ts'
+import { setAppStatusAC } from '../../app/app-reducer.ts'
+import { handleError } from '../../common/utils/handle-error.ts'
 
-/**
- * Функция для получения колод.
- * @returns Function Функция-экшен, принимающая объект диспетчера.
- */
-
-export const fetchDecksTC = () => (dispatch: Dispatch) => {
-  decksAPI.fetchDecks().then((res) => {
-    dispatch(setDecksAC(res.data.items))
-  })
-}
-
-/**
- * Функция для добавления колоды.
- * @param {string} name - Название колоды.
- * @returns  Function Функция-экшен, принимающая объект диспетчера.
- */
-
-export const addDeckTC = (name: string) => (dispatch: AppDispatch) => {
-  return decksAPI.addDeck(name).then(() => {
-    dispatch(fetchDecksTC())
-  })
-}
-
-export const deleteDeckTC = (id: string) => async (dispatch: Dispatch) => {
+export const fetchDecksTC = () => async (dispatch: Dispatch) => {
+  dispatch(setAppStatusAC('loading'))
   try {
-    await decksAPI.deleteDeck(id)
-    dispatch(deleteDeckAC(id))
+    const res = await decksAPI.fetchDecks()
+    dispatch(setDecksAC(res.data.items))
+    dispatch(setAppStatusAC('succeeded'))
   } catch (e) {
-    console.log((e as any).message)
+    dispatch(setAppStatusAC('failed'))
   }
 }
 
-export const updateDeckTC = (params: UpdateDeckParams) => (dispatch: Dispatch) => {
-  return decksAPI.updateDeck(params).then((res) => {
-    dispatch(updateDeckAC(res.data))
+export const addDeckTC = (name: string) => async (dispatch: Dispatch) => {
+  return decksAPI.addDeck(name).then((res) => {
+    dispatch(addDeckAC(res.data))
   })
+}
+
+export const deleteDeckTC = (id: string) => (dispatch: Dispatch) => {
+  return decksAPI.deleteDeck(id).then((res) => {
+    dispatch(deleteDeckAC(res.data.id))
+  })
+}
+
+// case-1: ошибка запроса (приходят с бэкенда) - axios создаёт объект ошибки, в response.data помещает ответ сервера
+// case-2: network error (на сторое клиента) - axios создаёт объект ошибки, текс ошибки берём из поля message
+// case-3: ошибка вне запроса - генерируется JS - имеет поле message
+
+export const updateDeckTC = (params: UpdateDeckParams) => async (dispatch: Dispatch) => {
+  try {
+    const res = await decksAPI.updateDeck(params)
+    dispatch(updateDeckAC(res.data))
+  } catch (e) {
+    handleError(e, dispatch)
+  }
 }
